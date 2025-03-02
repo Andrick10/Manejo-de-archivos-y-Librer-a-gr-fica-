@@ -1,0 +1,90 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.ArrayList;
+
+class Factura {
+    int numero;
+    String cliente;
+    double monto;
+    
+    public Factura(int numero, String cliente, double monto) {
+        this.numero = numero;
+        this.cliente = cliente;
+        this.monto = monto;
+    }
+    
+    public String toString() {
+        return "Factura No: " + numero + ", Cliente: " + cliente + ", Monto: " + monto;
+    }
+}
+
+public class FacturacionGUI {
+    private ArrayList<Factura> facturas = new ArrayList<>();
+    private JFrame frame;
+    
+    public FacturacionGUI() {
+        frame = new JFrame("Sistema de Facturación");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new GridLayout(4, 1));
+        
+        JButton btnRegistro = new JButton("Registro de facturas");
+        JButton btnConsulta = new JButton("Consulta específica de factura");
+        JButton btnGuardar = new JButton("Guardar facturas en archivo");
+        JButton btnSalir = new JButton("Salir");
+        
+        btnRegistro.addActionListener(e -> registrarFactura());
+        btnConsulta.addActionListener(e -> consultarFactura());
+        btnGuardar.addActionListener(e -> guardarFacturasEnArchivo());
+        btnSalir.addActionListener(e -> System.exit(0));
+        
+        frame.add(btnRegistro);
+        frame.add(btnConsulta);
+        frame.add(btnGuardar);
+        frame.add(btnSalir);
+        
+        frame.setVisible(true);
+    }
+    
+    private void registrarFactura() {
+        try {
+            int numero = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de factura:"));
+            String cliente = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+            double monto = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el monto de la factura:"));
+            facturas.add(new Factura(numero, cliente, monto));
+            JOptionPane.showMessageDialog(frame, "Factura registrada exitosamente.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, "Error al ingresar los datos.");
+        }
+    }
+    
+    private void consultarFactura() {
+        int numero = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de factura a consultar:"));
+        for (Factura f : facturas) {
+            if (f.numero == numero) {
+                JOptionPane.showMessageDialog(frame, f.toString());
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(frame, "Factura no se encuentra registrada.");
+    }
+    
+    private void guardarFacturasEnArchivo() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("facturas.txt"))) {
+            for (Factura f : facturas) {
+                writer.write(f.toString());
+                writer.newLine();
+            }
+            JOptionPane.showMessageDialog(frame, "Facturas guardadas en archivo exitosamente.");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "Error al guardar en el archivo.");
+        }
+    }
+    
+    public static void main(String[] args) {
+        new FacturacionGUI();
+    }
+}
